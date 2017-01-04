@@ -10,18 +10,18 @@
     - mariadb-server
     - MySQL-python
 
+- name: Start MariaDB Service
+  service:
+    name: mariadb
+    state: started
+    enabled: yes
+
 - name: Create MariaDB configuration file
   template:
     src: my.cnf.j2
     dest: /etc/my.cnf
   notify:
     - restart mariadb
-
-- name: Start MariaDB Service
-  service:
-    name: mariadb
-    state: started
-    enabled: yes
 
 - name: Create Application Database
   mysql_db:
@@ -32,5 +32,6 @@
   mysql_user:
     name: "{{ dbuser }}"
     password: "{{ upassword }}"
-    priv: "*.*:ALL host='%'"
+    priv: *.*:ALL
+    host: '%'
     state: present
