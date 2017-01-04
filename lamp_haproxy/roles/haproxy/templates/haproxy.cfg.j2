@@ -30,7 +30,7 @@ defaults
     maxconn                 3000
 
 backend app
-    {% for host in groups.lbservers %}
+    {% for host in groups.tag_Group_lbservers %}
     	listen {{ daemonname }} 0.0.0.0:{{ listenport }}
     {% endfor %}
     balance     {{ balance }}
