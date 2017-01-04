@@ -77,24 +77,19 @@
           - proto: tcp
             from_port: 22
             to_port: 22
-            cidr_ip: "{{ public_internet_cidr }}"
+            cidr_ip: 0.0.0.0/0
           - proto: tcp
             from_port: 443
             to_port: 443
-            cidr_ip: "{{ public_internet_cidr }}"
+            cidr_ip: 0.0.0.0/0
           - proto: tcp
             from_port: 8080
             to_port: 8080
-            cidr_ip: "{{ public_internet_cidr }}"
+            cidr_ip: 0.0.0.0/0
           - proto: tcp
             from_port: 80
             to_port: 80
-            cidr_ip: "{{ public_internet_cidr }}"
-        rules_egress:
-          - proto: all
-            from_port: -1
-            to_port: -1
-            cidr_ip: "{{ public_internet_cidr }}"
+            cidr_ip: 0.0.0.0/0
 
     - name: Create the EC2 instance
       ec2:
