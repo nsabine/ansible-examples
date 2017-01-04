@@ -1,6 +1,11 @@
 ---
 # This will install nagios
 
+- name: install the nagios repo
+  yum:
+    name: https://repo.nagios.com/nagios/7/nagios-repo-7-2.el7.noarch.rpm
+    state: present
+
 - name: install nagios
   yum:
     pkg: "{{ item }}"
