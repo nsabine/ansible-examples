@@ -2,11 +2,13 @@
 ---
 - name: Apply common configuration to all hosts
   hosts: all
+  become: yes
   roles:
     - common
 
 - name: Configure and deploy database servers.
   hosts: tag_Group_dbservers
+  become: yes
   roles:
     - db
   tags:
@@ -17,6 +19,7 @@
 # our example web application.
 - name: Configure and deploy the web servers.
   hosts: tag_Group_webservers
+  become: yes
   roles:
     - base-apache
     - web
@@ -25,6 +28,7 @@
 
 - name: Configure and deploy the load balancer(s).
   hosts: tag_Group_lbservers
+  become: yes
   roles:
     - haproxy
   tags:
@@ -32,6 +36,7 @@
 
 - name: Configure and deploy the Nagios monitoring node(s).
   hosts: tag_Group_monitoring
+  become: yes
   roles:
     - base-apache
     - nagios
