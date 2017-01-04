@@ -67,6 +67,35 @@
     - set_fact:
         subnet_id: "{{ target_subnet_facts.subnets[0].id }}"
 
+    - name: Ensure the demo security group is configured correctly
+      ec2_group:
+        aws_region: "{{ aws_region }}"
+        name: ansible-demo
+        description: SSH and common web app ports for Ansible demos.
+        vpc_id: "{{ vpc_id }}"
+        rules:
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: "{{ public_internet_cidr }}"
+          - proto: tcp
+            from_port: 443
+            to_port: 443
+            cidr_ip: "{{ public_internet_cidr }}"
+          - proto: tcp
+            from_port: 8080
+            to_port: 8080
+            cidr_ip: "{{ public_internet_cidr }}"
+          - proto: tcp
+            from_port: 80
+            to_port: 80
+            cidr_ip: "{{ public_internet_cidr }}"
+        rules_egress:
+          - proto: all
+            from_port: -1
+            to_port: -1
+            cidr_ip: "{{ public_internet_cidr }}"
+
     - name: Create the EC2 instance
       ec2:
         aws_region: "{{ aws_region }}"
