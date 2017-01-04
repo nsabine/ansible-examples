@@ -13,21 +13,11 @@
         - aws_region
         - vpc_name
 
-    - shell: whoami
-      register: whoami
-
-    - set_fact:
-        demo_user: "{{ whoami.stdout }}"
-
-    - set_fact:
-        demo_user: "{{ tower_user_name }}"
-      when: "{{ whoami.stdout == 'awx' }}"
-
     - set_fact:
         demo_tags:
-          Name: ansible-demo-{{ demo_user }}
+          Name: ansible-demo-{{ tower_user_name }}
           AnsibleDemo: True
-          DemoUser: "{{ demo_user }}"
+          DemoUser: "{{ tower_user_name }}"
 
     - name: Gather facts about the target VPC
       ec2_vpc_net_facts:
@@ -90,6 +80,7 @@
             from_port: 80
             to_port: 80
             cidr_ip: 0.0.0.0/0
+        state: present
 
     - name: Create the EC2 instance
       ec2:

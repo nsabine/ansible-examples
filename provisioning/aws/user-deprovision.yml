@@ -1,22 +1,6 @@
 ---
-- name: Setup
-  hosts: localhost
-  connection: local
-  gather_facts: no
-  become: no
-  tasks:
-    - shell: whoami
-      register: whoami
-
-    - set_fact:
-        demo_user: "{{ whoami.stdout }}"
-
-    - set_fact:
-        demo_user: "{{ tower_user_name }}"
-      when: "{{ whoami.stdout == 'awx' }}"
-
 - name: Deprovision demo EC2 instances for the current user
-  hosts: tag_AnsibleDemo_True:&tag_Name_ansible_demo_{{ demo_user }}
+  hosts: tag_AnsibleDemo_True:&tag_Name_ansible_demo_{{ tower_user_name }}
   gather_facts: no
   become: no
   tasks:
