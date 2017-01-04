@@ -1,5 +1,5 @@
 ---
-- name: Pre-Provisioning Setup
+- name: Setup
   hosts: localhost
   connection: local
   gather_facts: no
@@ -20,7 +20,7 @@
         demo_user: "{{ whoami.stdout }}"
 
     - set_fact:
-        demo_user: "{{ tower_user_name}}"
+        demo_user: "{{ tower_user_name }}"
       when: "{{ whoami.stdout == 'awx' }}"
 
     - set_fact:
