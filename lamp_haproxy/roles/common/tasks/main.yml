@@ -65,6 +65,9 @@
   register: selinux
 
 - name: Configure SELinux if it is present
+  shell: setenforce 0
+
+- name: Configure SELinux if it is present
   copy:
     dest: /etc/selinux/config
     content: |

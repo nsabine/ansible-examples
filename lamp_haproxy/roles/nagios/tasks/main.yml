@@ -24,34 +24,56 @@
 - name: create nagios config dir
   file:
     path: /etc/nagios/ansible-managed
+    owner: nagios
+    group: nagios
     state: directory
 
 - name: configure nagios
   copy:
     src: nagios.cfg
     dest: /etc/nagios/nagios.cfg
+    owner: nagios
+    group: nagios
   notify: restart nagios
 
 - name: configure localhost monitoring
   copy:
     src: localhost.cfg
     dest: /etc/nagios/objects/localhost.cfg
+    owner: nagios
+    group: nagios
   notify: restart nagios
 
 - name: configure nagios services
   copy:
     src: ansible-managed-services.cfg
     dest: /etc/nagios/
+    owner: nagios
+    group: nagios
 
 - name: create the nagios object files
   template:
     src: "{{ item }}.j2"
     dest: /etc/nagios/ansible-managed/{{ item }}
+    owner: nagios
+    group: nagios
   with_items:
     - webservers.cfg
     - dbservers.cfg
     - lbservers.cfg
   notify: restart nagios
+
+- name: ensure nagios directories have correct permissions
+  file:
+    path: "{{ item }}"
+    owner: nagios
+    group: nagios
+    recurse: yes
+    state: directory
+  with_items:
+    - /var/log/nagios
+    - /etc/nagios
+    - /var/run/nagios
 
 - name: start nagios
   service:
