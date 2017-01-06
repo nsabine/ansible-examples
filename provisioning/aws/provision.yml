@@ -31,7 +31,7 @@
 
     - name: Create an inventory for provisioning purposes
       add_host:
-        name: instance-{{ item.0 }}
+        name: instance-profile-{{ item.0 }}
         aws_region: "{{ aws_region }}"
         vpc_id: "{{ vpc_id }}"
         subnet_name: "{{ item.1.subnet_name }}"
@@ -39,6 +39,7 @@
         tags: "{{ item.1.tags | combine(demo_tags) }}"
         ami_id: "{{ item.1.ami_id }}"
         type: "{{ item.1.instance_type | default('t2.micro')}}"
+        count: "{{ item.1.count }}"
       with_indexed_items: "{{ aws_instances | default([]) }}"
 
 - name: Provision EC2 instance
