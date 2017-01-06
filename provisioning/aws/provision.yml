@@ -91,7 +91,7 @@
         instance_type: "{{ type }}"
         group: ansible-demo
         assign_public_ip: yes
-        exact_count: 1
+        exact_count: "{{ count | default(1) }}"
         instance_tags: "{{ tags }}"
         count_tag: "{{ tags }}"
         wait: yes
