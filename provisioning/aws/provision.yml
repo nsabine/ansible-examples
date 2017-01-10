@@ -39,7 +39,7 @@
         tags: "{{ item.1.tags | combine(demo_tags) }}"
         ami_id: "{{ item.1.ami_id }}"
         type: "{{ item.1.instance_type | default('t2.micro')}}"
-        count: "{{ item.1.count }}"
+        count: "{{ item.1.count | default(1) }}"
       with_indexed_items: "{{ aws_instances | default([]) }}"
 
 - name: Provision EC2 instance
@@ -92,7 +92,7 @@
         instance_type: "{{ type }}"
         group: ansible-demo
         assign_public_ip: yes
-        exact_count: "{{ count | default(1) }}"
+        exact_count: "{{ count }}"
         instance_tags: "{{ tags }}"
         count_tag: "{{ tags }}"
         wait: yes
