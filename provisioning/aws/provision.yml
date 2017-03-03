@@ -36,9 +36,10 @@
         vpc_id: "{{ vpc_id }}"
         subnet_name: "{{ item.1.subnet_name }}"
         keypair_name: "{{ item.1.keypair_name }}"
+        user_data: "{{ item.1.user_data | default(None) }}"
         tags: "{{ item.1.tags | combine(demo_tags) }}"
         ami_id: "{{ item.1.ami_id }}"
-        type: "{{ item.1.instance_type | default('t2.micro')}}"
+        type: "{{ item.1.instance_type | default('t2.micro') }}"
         count: "{{ item.1.count | default(1) }}"
       with_indexed_items: "{{ aws_instances | default([]) }}"
 
@@ -90,6 +91,7 @@
         key_name: "{{ keypair_name }}"
         image: "{{ ami_id }}"
         instance_type: "{{ type }}"
+        user_data: "{{ user_data }}"
         group: ansible-demo
         assign_public_ip: yes
         exact_count: "{{ count }}"
