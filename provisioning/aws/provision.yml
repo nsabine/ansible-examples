@@ -44,7 +44,7 @@
       with_indexed_items: "{{ aws_instances | default([]) }}"
 
 - name: Provision EC2 instance
-  hosts: all
+  hosts: instance-profile-*
   gather_facts: no
   connection: local
   tasks:
