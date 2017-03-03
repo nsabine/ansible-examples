@@ -33,12 +33,15 @@
       add_host:
         name: instance-profile-{{ item.0 }}
         aws_region: "{{ aws_region }}"
+        platform: "{{ item.1.platform | default(None) }}"
+        virtualization_type: "{{ item.1.virtualization_type | default(None) }}"
         vpc_id: "{{ vpc_id }}"
         subnet_name: "{{ item.1.subnet_name }}"
         keypair_name: "{{ item.1.keypair_name }}"
         user_data: "{{ item.1.user_data | default(None) }}"
         tags: "{{ item.1.tags | combine(demo_tags) }}"
-        ami_id: "{{ item.1.ami_id }}"
+        ami_name: "{{ item.1.ami_name | default(None) }}"
+        ami_id: "{{ item.1.ami_id | default(None) }}"
         type: "{{ item.1.instance_type | default('t2.micro') }}"
         count: "{{ item.1.count | default(1) }}"
       with_indexed_items: "{{ aws_instances | default([]) }}"
@@ -48,6 +51,28 @@
   gather_facts: no
   connection: local
   tasks:
+    - name: Find latest version of the specified AMI if given by name
+      ec2_ami_find:
+        region: "{{ aws_region }}"
+        platform: "{{ platform }}"
+        virtualization_type: "{{ virtualization_type }}"
+        owner: amazon
+        name: "{{ ami_name }}"
+        no_result_action: fail
+        sort: name
+        sort_order: descending
+      register: found_amis
+      when:
+        - ami_name
+        - not ami_id
+
+    - name: Set AMI ID
+      set_fact:
+        ami_id: "{{ (found_amis.results | first).ami_id }}"
+      when:
+        - ami_name
+        - not ami_id
+
     - name: Gather facts about the target subnet
       ec2_vpc_subnet_facts:
         aws_region: "{{ aws_region }}"
