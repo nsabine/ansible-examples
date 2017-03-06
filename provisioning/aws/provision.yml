@@ -44,6 +44,7 @@
         ami_id: "{{ item.1.ami_id | default(None) }}"
         type: "{{ item.1.instance_type | default('t2.micro') }}"
         count: "{{ item.1.count | default(1) }}"
+        wait_port: "{{ item.1.wait_port | default(None)}}"
       with_indexed_items: "{{ aws_instances | default([]) }}"
 
 - name: Provision EC2 instance
@@ -134,6 +135,13 @@
     - name: Check on provisioning
       async_status:
         jid: "{{ provisioning.ansible_job_id }}"
-      register: provisioning_result
-      until: "{{ provisioning_result.finished }}"
+      register: provisioning_job
+      until: "{{ provisioning_job.finished }}"
       retries: 30
+
+    - name: Wait for provisioned instance
+      wait_for:
+        port: "{{ wait_port }}"
+        host: "{{ provisioning_job.tagged_instances[0].public_ip }}"
+        delay: 10
+      when: wait_port
