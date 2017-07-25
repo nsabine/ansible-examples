@@ -47,6 +47,11 @@
                      Hello, world!
                    path: /tmp/greeting.txt
                    permissions: '0644'
+                write_files: 
+                 - content: |
+                     GATEWAY=10.61.0.1
+                   path: /etc/sysconfig/network
+                   permissions: '0644'
               user_name: root
               authorized_ssh_keys: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC/Gm7/LpyDWRqTOQtm47pOHqTOgcQQIkLB97UTph57hQMNb3ByTC9rCoDyUvjN7LpvlfpJqKt8CH6yH2e+Ox+ol6dXIniH23FUpbBAFjPr4pnpoVM2rrczGi2NbuNIy4nx1XSvzu2mXLo8PLjdccYw33mjM9vqiyxUmBELg5Mo3YUBH2m0dES9JOWraiMmfR9eAYQYmGqPVo8t76ZrdtU48FSWs9MdgHdyb2W7Gj9XuERFrXPwPeEh36DZ0a1VMlfpOQpGuAPIqW/UlG+7NR1p9eedbo+e6nJNdFM2B+fxfssHbrCdxzx6SEBkbp/ccM3CXddfhdGEmXyccdX9Wxzn ansible@tower
               root_password: super_password
