@@ -39,9 +39,6 @@
             cluster: Default
             memory: 2GiB
             high_availability: true
-            nics:
-              - name: eth0
-                profile_name: ovirtmgmt
             cloud_init:
               host_name: wordpress-server.home.nicksabine.com
               custom_script: |
