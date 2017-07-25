@@ -1,0 +1,122 @@
+---
+- name: Setup
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  become: no
+  tasks:
+    # Create a vault with `ovirt_password` variable which store your
+    # oVirt/RHV user's password, and include that yaml file with variable:
+    - include_vars: ovirt_password.yml
+    - name: Check for required variables
+      fail:
+        msg: "Required variable not defined: {{ item }}"
+      when: item not in vars
+      with_items:
+        - ovirt_username
+        - ovirt_password
+        - ovirt_url
+
+- name: Provision VM
+  hosts: localhost
+  gather_facts: no
+  connection: local
+  tasks:
+    - block: 
+        - name: Obtain SSO token with using username/password credentials
+          ovirt_auth:
+            url: "{{ ovirt_url }}"
+            username: "{{ ovirt_username }}"
+            password: "{{ ovirt_password }}"
+            ca_file: ca.crt
+
+        - name: Create the VM
+          ovirt_vms:
+            auth: "{{ ovirt_auth }}"
+            name: wordpress
+            state: present
+            template: rhel7-with-cloud-init
+            cluster: Default
+            memory: 2GiB
+            high_availability: true
+            nics:
+              - name: eth0
+                profile_name: ovirtmgmt
+            cloud_init:
+              host_name: wordpress.home.nicksabine.com
+              custom_script: |
+                write_files: 
+                 - content: |
+                     Hello, world!
+                   path: /tmp/greeting.txt
+                   permissions: '0644'
+              user_name: root
+              authorized_ssh_keys: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC/Gm7/LpyDWRqTOQtm47pOHqTOgcQQIkLB97UTph57hQMNb3ByTC9rCoDyUvjN7LpvlfpJqKt8CH6yH2e+Ox+ol6dXIniH23FUpbBAFjPr4pnpoVM2rrczGi2NbuNIy4nx1XSvzu2mXLo8PLjdccYw33mjM9vqiyxUmBELg5Mo3YUBH2m0dES9JOWraiMmfR9eAYQYmGqPVo8t76ZrdtU48FSWs9MdgHdyb2W7Gj9XuERFrXPwPeEh36DZ0a1VMlfpOQpGuAPIqW/UlG+7NR1p9eedbo+e6nJNdFM2B+fxfssHbrCdxzx6SEBkbp/ccM3CXddfhdGEmXyccdX9Wxzn ansible@tower
+              root_password: super_password
+              nic_name: eth0
+              nic_boot_protocol: static
+              nic_ip_address: 10.61.0.142
+              nic_netmask: 255.255.0.0
+              nic_gateway: 10.61.0.1
+              nic_on_boot: true
+          async: 180
+          register: provisioning
+    
+        - name: Debug
+          debug:
+              var: provisioning
+    
+        - name: Check on provisioning
+          async_status:
+            jid: "{{ provisioning.ansible_job_id }}"
+          register: provisioning_job
+          until: "{{ provisioning_job.finished }}"
+          retries: 30
+    
+        - name: Debug
+          debug:
+              var: provisioning_job
+         
+        - name: Tag VM - Demo
+          ovirt_tags:
+            name: ansible-demo
+            auth: "{{ ovirt_auth }}"
+            vms:
+              - "{{ provisioning_job.vm.name }}"
+
+        - name: Tag VM - Wordpress
+          ovirt_tags:
+            name: wordpress
+            auth: "{{ ovirt_auth }}"
+            vms:
+              - "{{ provisioning_job.vm.name }}"
+
+        - name: Get provisioned VM Facts
+          ovirt_vms_facts:
+            pattern: name=wordpress
+            auth: "{{ ovirt_auth }}"
+          register: running_vm
+
+        - name: Debug
+          debug:
+              var: running_vm
+
+  #      - name: Wait for provisioned VM
+  #        ovirt_vms_facts:
+  #          pattern: name=wordpress
+  #          auth: "{{ ovirt_auth }}"
+  #        register: running_vm
+  #        until: "{{ running_vm.vm.ansible_host }}"
+  #        retries: 30
+
+        - name: Wait for provisioned VM
+          wait_for:
+            port: 22
+            host: "10.61.0.142"
+            delay: 10
+      
+      always:
+        - name: Always revoke the SSO token
+          ovirt_auth:
+            state: absent
+            ovirt_auth: "{{ ovirt_auth }}"

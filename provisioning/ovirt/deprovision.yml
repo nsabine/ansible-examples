@@ -1,0 +1,48 @@
+---
+- name: Setup
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  become: no
+  tasks:
+    # Create a vault with `ovirt_password` variable which store your
+    # oVirt/RHV user's password, and include that yaml file with variable:
+    - include_vars: ovirt_password.yml
+    - name: Check for required variables
+      fail:
+        msg: "Required variable not defined: {{ item }}"
+      when: item not in vars
+      with_items:
+        - ovirt_username
+        - ovirt_password
+        - ovirt_url
+
+    - set_fact:
+        demo_tags:
+          Name: ansible-demo
+          AnsibleDemo: True
+
+- name: Delete VM
+  hosts: localhost
+  gather_facts: no
+  connection: local
+  tasks:
+    - block: 
+        - name: Obtain SSO token with using username/password credentials
+          ovirt_auth:
+            url: "{{ ovirt_url }}"
+            username: "{{ ovirt_username }}"
+            password: "{{ ovirt_password }}"
+            ca_file: ca.crt
+
+        - name: Remove the VM
+          ovirt_vms:
+            auth: "{{ ovirt_auth }}"
+            name: wordpress
+            state: absent
+      
+      always:
+        - name: Always revoke the SSO token
+          ovirt_auth:
+            state: absent
+            ovirt_auth: "{{ ovirt_auth }}"
