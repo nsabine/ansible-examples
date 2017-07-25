@@ -33,7 +33,7 @@
         - name: Create the VM
           ovirt_vms:
             auth: "{{ ovirt_auth }}"
-            name: wordpress
+            name: wordpress-server
             state: present
             template: rhel7-with-cloud-init
             cluster: Default
@@ -43,7 +43,7 @@
               - name: eth0
                 profile_name: ovirtmgmt
             cloud_init:
-              host_name: wordpress.home.nicksabine.com
+              host_name: wordpress-server.home.nicksabine.com
               custom_script: |
                 write_files: 
                  - content: |

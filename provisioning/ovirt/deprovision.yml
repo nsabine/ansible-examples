@@ -38,7 +38,7 @@
         - name: Remove the VM
           ovirt_vms:
             auth: "{{ ovirt_auth }}"
-            name: wordpress
+            name: wordpress-server
             state: absent
       
       always:
