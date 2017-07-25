@@ -83,14 +83,14 @@
 
         - name: Tag VM - Wordpress
           ovirt_tags:
-            name: wordpress
+            name: wordpress-server
             auth: "{{ ovirt_auth }}"
             vms:
               - "{{ provisioning_job.vm.name }}"
 
         - name: Get provisioned VM Facts
           ovirt_vms_facts:
-            pattern: name=wordpress
+            pattern: name=wordpress-server
             auth: "{{ ovirt_auth }}"
           register: running_vm
 
@@ -100,7 +100,7 @@
 
   #      - name: Wait for provisioned VM
   #        ovirt_vms_facts:
-  #          pattern: name=wordpress
+  #          pattern: name=wordpress-server
   #          auth: "{{ ovirt_auth }}"
   #        register: running_vm
   #        until: "{{ running_vm.vm.ansible_host }}"
