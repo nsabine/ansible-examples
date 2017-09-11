@@ -10,7 +10,7 @@
     consumer_name: wordpress-server
 
 - name: Install Katello Agent 
-  service: name=katello-agent state=present
+  yum: name=katello-agent state=present
 
 - name: Copy the NGINX repository definition
   copy: src=nginx.repo dest=/etc/yum.repos.d/
