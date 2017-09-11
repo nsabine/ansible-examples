@@ -9,8 +9,8 @@
     server_insecure: true
     consumer_name: wordpress-server
 
-- name: Start Katello Agent service 
-  service: name=katello-agent state=started enabled=yes
+- name: Install Katello Agent 
+  service: name=katello-agent state=present
 
 - name: Copy the NGINX repository definition
   copy: src=nginx.repo dest=/etc/yum.repos.d/
