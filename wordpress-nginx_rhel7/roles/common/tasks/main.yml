@@ -1,4 +1,13 @@
 ---
+- name: Register the system to Satellite
+  redhat_subscription:
+    state: present
+    force_register: true
+    activationkey: 'RHEL7'
+    org_id: 1
+    server_hostname: satellite.home.nicksabine.com
+    server_insecure: true
+
 - name: Copy the NGINX repository definition
   copy: src=nginx.repo dest=/etc/yum.repos.d/
 
