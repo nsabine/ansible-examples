@@ -4,9 +4,13 @@
     state: present
     force_register: true
     activationkey: 'RHEL7'
-    org_id: 1
+    org_id: 'NS'
     server_hostname: satellite.home.nicksabine.com
     server_insecure: true
+    consumer_name: wordpress-server
+
+- name: Start Katello Agent service 
+  service: name=katello-agent state=started enabled=yes
 
 - name: Copy the NGINX repository definition
   copy: src=nginx.repo dest=/etc/yum.repos.d/
