@@ -70,7 +70,7 @@
   
         - name: Tag VM - windows
           ovirt_tags:
-            name: windows-server
+            name: windows
             auth: "{{ ovirt_auth }}"
             vms:
               - "{{ provisioning_job.vm.name }}"
