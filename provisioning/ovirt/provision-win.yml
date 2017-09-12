@@ -40,9 +40,9 @@
             memory: 4GiB
             high_availability: true
             sysprep:
-              host_name: windows-server.home.nicksabine.com
-              user_name: user
-              root_password: super_password
+              host_name: "windows-server"
+              user_name: "user"
+              root_password: "super_password"
           async: 180
           register: provisioning
     
